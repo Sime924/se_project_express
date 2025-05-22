@@ -4,4 +4,4 @@ const getUsers = (req, res) => {
   console.log("In Controller");
 };
 
-modile.exports = { getUsers };
+module.exports = { getUsers };
