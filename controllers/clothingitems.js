@@ -8,13 +8,18 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
   clothingItem
-    .create({ name, weather, imageUrl })
+    .create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
     })
     .catch((err) => {
-      res.status(SERVER_MALFUNCTION).send({ message: "Error from createItem" });
+      if (err.name === "ValidationError") {
+        return res
+          .status(404)
+          .send({ message: SERVER_MALFUNCTION, error: err.message });
+      }
+      res.status(500).send({ message: "Server error" });
     });
 };
 
