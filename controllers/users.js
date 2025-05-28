@@ -10,7 +10,9 @@ const getUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      return res.status(SERVER_MALFUNCTION).send({ message: err.message });
+      return res
+        .status(SERVER_MALFUNCTION)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
