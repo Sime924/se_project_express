@@ -3,14 +3,11 @@ const { SERVER_MALFUNCTION } = require("../utils/errors");
 const clothingItem = require("../models/clothingitems");
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
   const { name, weather, imageUrl } = req.body;
 
   clothingItem
     .create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      console.log(item);
       res.send({ data: item });
     })
     .catch((err) => {
@@ -19,16 +16,18 @@ const createItem = (req, res) => {
           .status(404)
           .send({ message: SERVER_MALFUNCTION, error: err.message });
       }
-      res.status(500).send({ message: "Server error" });
+      return res.status(500).send({ message: "Server error" });
     });
 };
 
 const getItems = async (req, res) => {
   try {
     const items = await clothingItem.find({});
-    res.send(items);
+    return res.send(items);
   } catch (err) {
-    res.status(500).send({ message: SERVER_MALFUNCTION, error: err.message });
+    return res
+      .status(500)
+      .send({ message: SERVER_MALFUNCTION, error: err.message });
   }
 };
 
@@ -41,9 +40,11 @@ const deleteItem = async (req, res) => {
       return res.status(404).send({ message: "Item not found" });
     }
 
-    res.send({ message: "Item deleted", item: deletedItem });
+    return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
-    res.status(500).send({ message: SERVER_MALFUNCTION, error: err.message });
+    return res
+      .status(500)
+      .send({ message: SERVER_MALFUNCTION, error: err.message });
   }
 };
 
@@ -60,9 +61,11 @@ const likeItem = async (req, res) => {
     if (!updatedItem) {
       return res.status(404).send({ message: "Item not found" });
     }
-    res.send(updatedItem);
+    return res.send(updatedItem);
   } catch (err) {
-    res.status(500).send({ message: SERVER_MALFUNCTION, error: err.message });
+    return res
+      .status(500)
+      .send({ message: SERVER_MALFUNCTION, error: err.message });
   }
 };
 
@@ -79,9 +82,11 @@ const deleteLike = async (req, res) => {
     if (!updatedItem) {
       return res.status(404).send({ message: "Item not found" });
     }
-    res.send(updatedItem);
+    return res.send(updatedItem);
   } catch (err) {
-    res.status(500).send({ message: SERVER_MALFUNCTION, error: err.message });
+    return res
+      .status(500)
+      .send({ message: SERVER_MALFUNCTION, error: err.message });
   }
 };
 module.exports = {
