@@ -3,6 +3,8 @@ const {
   PAGE_NOT_FOUND,
   REQUEST_COMPLETED_SUCCESSFULLY,
   YOUR_DATA_IS_CREATED,
+  SERVER_MALFUNCTION,
+  BAD_REQUEST_STATUS_CODE,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -27,9 +29,8 @@ const createUser = (req, res) => {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: err.message });
-      } else {
-        return res.status(SERVER_MALFUNCTION).send({ message: err.message });
       }
+      return res.status(SERVER_MALFUNCTION).send({ message: err.message });
     });
 };
 
@@ -42,7 +43,8 @@ const getUser = (req, res) => {
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(PAGE_NOT_FOUND).send({ message: "User not found" });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: "Invalid user ID format" });

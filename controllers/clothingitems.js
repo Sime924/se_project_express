@@ -1,6 +1,7 @@
 const { SERVER_MALFUNCTION } = require("../utils/errors");
 
 const clothingItem = require("../models/clothingitems");
+const Item = require("../models/clothingitems");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
