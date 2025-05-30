@@ -1,4 +1,7 @@
-const { SERVER_MALFUNCTION } = require("../utils/errors");
+const {
+  SERVER_MALFUNCTION,
+  BAD_REQUEST_STATUS_CODE,
+} = require("../utils/errors");
 
 const clothingItem = require("../models/clothingitems");
 const Item = require("../models/clothingitems");
@@ -13,9 +16,10 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(404)
-          .send({ message: SERVER_MALFUNCTION, error: err.message });
+        return res.status(BAD_REQUEST_STATUS_CODE).send({
+          message: SERVER_MALFUNCTION,
+          message: "An error has occurred on the server",
+        });
       }
       return res.status(500).send({ message: "Server error" });
     });
@@ -43,6 +47,11 @@ const deleteItem = async (req, res) => {
 
     return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res
+        .status(BAD_REQUEST_STATUS_CODE)
+        .send({ message: "Invalid ID format" });
+    }
     return res
       .status(500)
       .send({ message: SERVER_MALFUNCTION, error: err.message });
@@ -64,6 +73,11 @@ const likeItem = async (req, res) => {
     }
     return res.send(updatedItem);
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(BAD_REQUEST_STATUS_CODE)({
+        message: " Invalid ID fomat",
+      });
+    }
     return res
       .status(500)
       .send({ message: SERVER_MALFUNCTION, error: err.message });
@@ -85,6 +99,11 @@ const deleteLike = async (req, res) => {
     }
     return res.send(updatedItem);
   } catch (err) {
+    if (err.name === "CastError") {
+      return res
+        .status(BAD_REQUEST_STATUS_CODE)
+        .send({ message: "Invalid Id format" });
+    }
     return res
       .status(500)
       .send({ message: SERVER_MALFUNCTION, error: err.message });

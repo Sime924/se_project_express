@@ -38,8 +38,8 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .then((user) => res.status(REQUEST_COMPLETED_SUCCESSFULLY).send(user))
     .orFail()
+    .then((user) => res.status(REQUEST_COMPLETED_SUCCESSFULLY).send(user))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(PAGE_NOT_FOUND).send({ message: "User not found" });
