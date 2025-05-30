@@ -7,11 +7,11 @@ const {
   deleteLike,
 } = require("../controllers/clothingitems");
 
-router.get("/items", getItems);
+router.get("/", getItems);
 router.post("/", createItem);
-router.delete("/items/:itemId", deleteItem);
+router.delete("/:itemId", deleteItem);
 
-router.put("/items/:itemId/likes", likeItem);
-router.delete("/items/:itemId/likes", deleteLike);
+router.put("/:itemId/likes", likeItem);
+router.delete("/:itemId/likes", deleteLike);
 
 module.exports = router;
