@@ -17,11 +17,10 @@ const createItem = (req, res) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: SERVER_MALFUNCTION,
-          message: "An error has occurred on the server",
+          message: "A Bad request was made",
         });
       }
-      return res.status(500).send({ message: "Server error" });
+      return res.status(SERVER_MALFUNCTION).send({ message: "Server error" });
     });
 };
 
@@ -31,8 +30,8 @@ const getItems = async (req, res) => {
     return res.send(items);
   } catch (err) {
     return res
-      .status(500)
-      .send({ message: SERVER_MALFUNCTION, error: err.message });
+      .status(SERVER_MALFUNCTION)
+      .send({ message: "An error has occured on the server" });
   }
 };
 
