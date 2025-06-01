@@ -1,6 +1,7 @@
 const {
   SERVER_MALFUNCTION,
   BAD_REQUEST_STATUS_CODE,
+  PAGE_NOT_FOUND,
 } = require("../utils/errors");
 
 const clothingItem = require("../models/clothingitems");
@@ -41,7 +42,7 @@ const deleteItem = async (req, res) => {
     const deletedItem = await clothingItem.findByIdAndDelete(itemId);
 
     if (!deletedItem) {
-      return res.status(404).send({ message: "Item not found" });
+      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
     }
 
     return res.send({ message: "Item deleted", item: deletedItem });
@@ -52,8 +53,8 @@ const deleteItem = async (req, res) => {
         .send({ message: "Invalid ID format" });
     }
     return res
-      .status(500)
-      .send({ message: SERVER_MALFUNCTION, error: err.message });
+      .status(SERVER_MALFUNCTION)
+      .send({ message: "An error has occured on the server" });
   }
 };
 
@@ -68,7 +69,7 @@ const likeItem = async (req, res) => {
       { new: true }
     );
     if (!updatedItem) {
-      return res.status(404).send({ message: "Item not found" });
+      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
     }
     return res.send(updatedItem);
   } catch (err) {
@@ -78,8 +79,8 @@ const likeItem = async (req, res) => {
       });
     }
     return res
-      .status(500)
-      .send({ message: SERVER_MALFUNCTION, error: err.message });
+      .status(SERVER_MALFUNCTION)
+      .send({ message: "An error has occured on the server" });
   }
 };
 
@@ -94,7 +95,7 @@ const deleteLike = async (req, res) => {
       { new: true }
     );
     if (!updatedItem) {
-      return res.status(404).send({ message: "Item not found" });
+      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
     }
     return res.send(updatedItem);
   } catch (err) {
