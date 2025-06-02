@@ -74,7 +74,7 @@ const likeItem = async (req, res) => {
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      return res.status(BAD_REQUEST_STATUS_CODE)({
+      return res.status(BAD_REQUEST_STATUS_CODE).send({
         message: " Invalid ID fomat",
       });
     }
@@ -105,8 +105,8 @@ const deleteLike = async (req, res) => {
         .send({ message: "Invalid Id format" });
     }
     return res
-      .status(500)
-      .send({ message: SERVER_MALFUNCTION, error: err.message });
+      .status(SERVER_MALFUNCTION)
+      .send({ message: "An error has occured on the server" });
   }
 };
 module.exports = {
