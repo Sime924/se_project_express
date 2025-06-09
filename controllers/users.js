@@ -1,10 +1,13 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
+
 const {
   PAGE_NOT_FOUND,
   REQUEST_COMPLETED_SUCCESSFULLY,
   YOUR_DATA_IS_CREATED,
   SERVER_MALFUNCTION,
   BAD_REQUEST_STATUS_CODE,
+  UNAUTHORIZED_ACCESS,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -19,9 +22,12 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-
-  User.create({ name, avatar })
+  const { name, avatar, email, password } = req.body;
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({ name, avatar, email, password: hash });
+    })
     .then((user) => res.status(YOUR_DATA_IS_CREATED).send(user))
     .catch((err) => {
       console.error(err);
@@ -53,4 +59,21 @@ const getUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUser };
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(UNAUTHORIZED_ACCESS)
+        .send({ message: "Incorrect email or password" });
+    });
+};
+
+module.exports = { getUsers, createUser, getUser, login };
