@@ -2,6 +2,7 @@ const {
   SERVER_MALFUNCTION,
   BAD_REQUEST_STATUS_CODE,
   PAGE_NOT_FOUND,
+  NOT_AUTHORIZED,
 } = require("../utils/errors");
 
 const clothingItem = require("../models/clothingitems");
@@ -40,6 +41,10 @@ const deleteItem = async (req, res) => {
   try {
     const { itemId } = req.params;
     const deletedItem = await clothingItem.findByIdAndDelete(itemId);
+
+    if (deletedItem.owner.toString() !== req.user._id) {
+      return res.status(NOT_AUTHORIZED).send({ message: "Access denied" });
+    }
 
     if (!deletedItem) {
       return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });

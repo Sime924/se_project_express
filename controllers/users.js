@@ -28,7 +28,10 @@ const createUser = (req, res) => {
     .then((hash) => {
       User.create({ name, avatar, email, password: hash });
     })
-    .then((user) => res.status(YOUR_DATA_IS_CREATED).send(user))
+    .then((user) => {
+      delete user.password;
+      res.status(YOUR_DATA_IS_CREATED).send(user);
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
