@@ -1,5 +1,7 @@
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = require("../utils/config");
+const User = require("../models/user");
 
 const {
   PAGE_NOT_FOUND,
@@ -29,8 +31,9 @@ const createUser = (req, res) => {
       User.create({ name, avatar, email, password: hash });
     })
     .then((user) => {
-      delete user.password;
-      res.status(YOUR_DATA_IS_CREATED).send(user);
+      const { password: userPassword, ...userWithoutPassword } =
+        user.toObject();
+      res.status(YOUR_DATA_IS_CREATED).send(userWithoutPassword);
     })
     .catch((err) => {
       console.error(err);
@@ -75,6 +78,7 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
+      console.error(err);
       res
         .status(UNAUTHORIZED_ACCESS)
         .send({ message: "Incorrect email or password" });
@@ -84,12 +88,11 @@ const login = (req, res) => {
 const updateProfile = (req, res) => {
   const { name, avatar } = req.body;
 
-  user
-    .findByIdAndUpdate(
-      req.user._id,
-      { name, avatar },
-      { new: true, runValidators: true }
-    )
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
     .then((user) => {
       res.json(user);
     })
