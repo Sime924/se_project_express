@@ -6,7 +6,6 @@ const {
 } = require("../utils/errors");
 
 const clothingItem = require("../models/clothingitems");
-const Item = require("../models/clothingitems");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -40,16 +39,17 @@ const getItems = async (req, res) => {
 const deleteItem = async (req, res) => {
   try {
     const { itemId } = req.params;
-    const deletedItem = await clothingItem.findByIdAndDelete(itemId);
-
-    if (deletedItem.owner.toString() !== req.user._id) {
-      return res.status(NOT_AUTHORIZED).send({ message: "Access denied" });
-    }
+    const deletedItem = await clothingItem.findById(itemId);
 
     if (!deletedItem) {
       return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
     }
 
+    if (deletedItem.owner.toString() !== req.user._id) {
+      return res.status(NOT_AUTHORIZED).send({ message: "Access denied" });
+    }
+
+    const result = await clothingItem.findByIdAndDelete(itemId);
     return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
     if (err.name === "CastError") {

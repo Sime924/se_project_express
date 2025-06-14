@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("../utils/config");
+const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 
 const {
@@ -10,26 +10,15 @@ const {
   SERVER_MALFUNCTION,
   BAD_REQUEST_STATUS_CODE,
   UNAUTHORIZED_ACCESS,
+  CONFLICT_ERROR,
 } = require("../utils/errors");
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(SERVER_MALFUNCTION)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => {
-      User.create({ name, avatar, email, password: hash });
-    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+
     .then((user) => {
       const { password: userPassword, ...userWithoutPassword } =
         user.toObject();
@@ -42,12 +31,17 @@ const createUser = (req, res) => {
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: err.message });
       }
+      if (err.code === 11000) {
+        return res
+          .status(CONFLICT_ERROR)
+          .send({ message: "User already exists" });
+      }
       return res.status(SERVER_MALFUNCTION).send({ message: err.message });
     });
 };
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
 
   User.findById(userId)
     .orFail()
@@ -113,4 +107,4 @@ const updateProfile = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login, updateProfile };
+module.exports = { createUser, getCurrentUser, login, updateProfile };
