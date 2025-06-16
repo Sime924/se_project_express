@@ -62,9 +62,13 @@ const getCurrentUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password);
-  User.findOne({ email })
-    .select("+password")
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE)
+      .send({ message: "The password and email fields are required" });
+  }
+
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
@@ -72,10 +76,11 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      console.error(err);
-      res
-        .status(UNAUTHORIZED_ACCESS)
-        .send({ message: "Incorrect email or password" });
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED_ACCESS)
+          .send({ message: "Incorrect email or password" });
+      }
     });
 };
 
