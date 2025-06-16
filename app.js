@@ -20,10 +20,10 @@ app.use(express.json());
 app.use(auth);
 app.use(cors());
 
-app.use("/", mainRouter);
-
 app.post("/signin", login);
 app.post("/signup", createUser);
+
+app.use("/", mainRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
