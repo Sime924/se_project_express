@@ -49,7 +49,7 @@ const deleteItem = async (req, res) => {
       return res.status(NOT_AUTHORIZED).send({ message: "Access denied" });
     }
 
-    const result = await clothingItem.findByIdAndDelete(itemId);
+    await clothingItem.findByIdAndDelete(itemId);
     return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
     if (err.name === "CastError") {
@@ -57,10 +57,10 @@ const deleteItem = async (req, res) => {
         .status(BAD_REQUEST_STATUS_CODE)
         .send({ message: "Invalid ID format" });
     }
-    return res
-      .status(SERVER_MALFUNCTION)
-      .send({ message: "An error has occured on the server" });
   }
+  return res
+    .status(SERVER_MALFUNCTION)
+    .send({ message: "An error has occured on the server" });
 };
 
 const likeItem = async (req, res) => {
@@ -68,7 +68,7 @@ const likeItem = async (req, res) => {
     const { itemId } = req.params;
     const userID = req.user._id;
 
-    const updatedItem = await Item.findByIdAndUpdate(
+    const updatedItem = await clothingItem.findByIdAndUpdate(
       itemId,
       { $addToSet: { likes: userID } },
       { new: true }

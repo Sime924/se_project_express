@@ -59,7 +59,7 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -68,20 +68,22 @@ const login = (req, res) => {
       .send({ message: "The password and email fields are required" });
   }
 
-  User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
-      res.send({ token });
-    })
-    .catch((err) => {
-      if (err.message === "Incorrect email or password") {
-        return res
-          .status(UNAUTHORIZED_ACCESS)
-          .send({ message: "Incorrect email or password" });
-      }
+  try {
+    const user = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
     });
+    return res.send({ token });
+  } catch (err) {
+    if (err.message === "Incorrect email or password") {
+      return res
+        .status(UNAUTHORIZED_ACCESS)
+        .send({ message: "Incorrect email or password" });
+    }
+    return res
+      .status(SERVER_MALFUNCTION)
+      .send({ message: "An error occurred on the server" });
+  }
 };
 
 const updateProfile = (req, res) => {
