@@ -25,6 +25,8 @@ app.post("/signup", createUser);
 app.use(auth);
 app.use("/", mainRouter);
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+  });
+}
