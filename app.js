@@ -23,6 +23,11 @@ app.use(cors({ origin: "*" }));
 app.post("/signin", login);
 app.post("/signup", createUser);
 app.use(auth);
+
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
 app.use("/", mainRouter);
 
 if (process.env.NODE_ENV !== "test") {
@@ -30,3 +35,5 @@ if (process.env.NODE_ENV !== "test") {
     console.log(`App listening on port ${PORT}`);
   });
 }
+
+module.exports = app;

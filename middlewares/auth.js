@@ -7,6 +7,7 @@ const auth = (req, res, next) => {
     { method: "POST", path: "/signin" },
     { method: "POST", path: "/signup" },
     { method: "GET", path: "/items" },
+    { method: "GET", path: "/" },
   ];
 
   const isPublicRoute = publicRoutes.some(
