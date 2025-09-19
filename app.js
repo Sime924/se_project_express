@@ -4,6 +4,7 @@ const cors = require("cors");
 const mainRouter = require("./routes/index");
 const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
+const errorHandler = require("./middlewares/error-handler");
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", mainRouter);
+
+app.use(errorHandler);
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
