@@ -1,3 +1,7 @@
+const BadRequestError = require("../errors/bad-request-error");
+const ForbiddenError = require("../errors/forbidden-err");
+const NotFoundError = require("../errors/not-found-err");
+
 const {
   SERVER_MALFUNCTION,
   BAD_REQUEST_STATUS_CODE,
@@ -7,7 +11,7 @@ const {
 
 const clothingItem = require("../models/clothingitems");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   clothingItem
@@ -17,53 +21,46 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: "A Bad request was made",
-        });
+        return next(new BadRequestError("Validation failed"));
       }
-      return res.status(SERVER_MALFUNCTION).send({ message: "Server error" });
+      return next(err);
     });
 };
 
-const getItems = async (req, res) => {
+const getItems = async (req, res, next) => {
   try {
     const items = await clothingItem.find({});
     return res.send(items);
   } catch (err) {
-    return res
-      .status(SERVER_MALFUNCTION)
-      .send({ message: "An error has occured on the server" });
+    return next(err);
   }
 };
 
-const deleteItem = async (req, res) => {
+const deleteItem = async (req, res, next) => {
   try {
     const { itemId } = req.params;
     const deletedItem = await clothingItem.findById(itemId);
 
     if (!deletedItem) {
-      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
+      return next(new NotFoundError("Item not found"));
     }
 
     if (deletedItem.owner.toString() !== req.user._id) {
-      return res.status(NOT_AUTHORIZED).send({ message: "Access denied" });
+      return next(new ForbiddenError("Access denied"));
     }
 
     await clothingItem.findByIdAndDelete(itemId);
     return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
     if (err.name === "CastError") {
-      return res
-        .status(BAD_REQUEST_STATUS_CODE)
-        .send({ message: "Invalid ID format" });
+      next(new BadRequestError("Invalid ID format"));
+      return;
     }
   }
-  return res
-    .status(SERVER_MALFUNCTION)
-    .send({ message: "An error has occured on the server" });
+  return next(err);
 };
 
-const likeItem = async (req, res) => {
+const likeItem = async (req, res, next) => {
   try {
     const { itemId } = req.params;
     const userID = req.user._id;
@@ -74,22 +71,18 @@ const likeItem = async (req, res) => {
       { new: true }
     );
     if (!updatedItem) {
-      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
+      return next(NotFoundError("Item not found"));
     }
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      return res.status(BAD_REQUEST_STATUS_CODE).send({
-        message: " Invalid ID fomat",
-      });
+      return next(BadRequestError("Invalid ID format"));
     }
-    return res
-      .status(SERVER_MALFUNCTION)
-      .send({ message: "An error has occured on the server" });
+    return next(err);
   }
 };
 
-const deleteLike = async (req, res) => {
+const deleteLike = async (req, res, next) => {
   try {
     const { itemId } = req.params;
     const userId = req.user._id;
@@ -100,18 +93,15 @@ const deleteLike = async (req, res) => {
       { new: true }
     );
     if (!updatedItem) {
-      return res.status(PAGE_NOT_FOUND).send({ message: "Item not found" });
+      return next(new NotFoundError("Item not found"));
     }
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      return res
-        .status(BAD_REQUEST_STATUS_CODE)
-        .send({ message: "Invalid Id format" });
+      next(BadRequestError("Invalid ID format"));
+      return;
     }
-    return res
-      .status(SERVER_MALFUNCTION)
-      .send({ message: "An error has occured on the server" });
+    return next(err);
   }
 };
 module.exports = {
