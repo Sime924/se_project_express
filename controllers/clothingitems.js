@@ -2,13 +2,6 @@ const BadRequestError = require("../errors/bad-request-error");
 const ForbiddenError = require("../errors/forbidden-err");
 const NotFoundError = require("../errors/not-found-err");
 
-const {
-  SERVER_MALFUNCTION,
-  BAD_REQUEST_STATUS_CODE,
-  PAGE_NOT_FOUND,
-  NOT_AUTHORIZED,
-} = require("../utils/errors");
-
 const clothingItem = require("../models/clothingitems");
 
 const createItem = (req, res, next) => {
@@ -56,8 +49,8 @@ const deleteItem = async (req, res, next) => {
       next(new BadRequestError("Invalid ID format"));
       return;
     }
+    return next(err);
   }
-  return next(err);
 };
 
 const likeItem = async (req, res, next) => {
@@ -71,12 +64,12 @@ const likeItem = async (req, res, next) => {
       { new: true }
     );
     if (!updatedItem) {
-      return next(NotFoundError("Item not found"));
+      return next(new NotFoundError("Item not found"));
     }
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      return next(BadRequestError("Invalid ID format"));
+      return next(new BadRequestError("Invalid ID format"));
     }
     return next(err);
   }
@@ -98,7 +91,7 @@ const deleteLike = async (req, res, next) => {
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      next(BadRequestError("Invalid ID format"));
+      next(new BadRequestError("Invalid ID format"));
       return;
     }
     return next(err);
