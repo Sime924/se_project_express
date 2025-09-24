@@ -6,6 +6,7 @@ const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 
@@ -29,8 +30,10 @@ app.use(auth);
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
-
+app.use(requestLogger);
 app.use("/", mainRouter);
+
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 

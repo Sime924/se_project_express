@@ -11,7 +11,7 @@ const messageFormat = winston.format.combine(
 
 const requestLogger = expressWinston.logger({
   transports: [
-    new winston.transport.Console({
+    new winston.transports.Console({
       format: messageFormat,
     }),
     new winston.transports.File({
