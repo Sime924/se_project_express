@@ -22,4 +22,7 @@ currently in this present state the backend has not been applied to the WTWR pro
 
 ###### Link
 
-the link to this project can be found on my github at link: [(https://github.com/Sime924/se_project_express.git)]
+[ front-end link: https://github.com/Sime924/se_project_react.git ],
+[back-end link: https://github.com/Sime924/se_project_express.git ]
+
+link to this project domain can be found at [https://www.whatstheweather.jumpingcrab.com]
