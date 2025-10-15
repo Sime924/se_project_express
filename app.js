@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,7 +9,10 @@ const auth = require("./middlewares/auth");
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-require("dotenv").config();
+const {
+  validateAuthentication,
+  validateUserBody,
+} = require("./middlewares/validation");
 
 const app = express();
 
@@ -30,14 +35,15 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.use(requestLogger);
+
+app.post("/signin", validateAuthentication, login);
+app.post("/signup", validateUserBody, createUser);
 app.use(auth);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
-app.use(requestLogger);
 app.use("/", mainRouter);
 
 app.use(errorLogger);
