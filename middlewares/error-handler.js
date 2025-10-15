@@ -5,7 +5,6 @@ const errorHandler = (err, req, res, next) => {
   const message =
     statusCode === 500 ? "An error has occurred on the server." : err.message;
   return res.status(statusCode).send({ message });
-  next();
 };
 
 module.exports = errorHandler;

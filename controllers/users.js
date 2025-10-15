@@ -4,7 +4,6 @@ const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 const BadRequestError = require("../errors/bad-request-error");
 const NotFoundError = require("../errors/not-found-err");
-const ForbiddenError = require("../errors/forbidden-err");
 const ConflictError = require("../errors/conflict-err");
 const UnauthorizedError = require("../errors/unauthorized-err");
 
@@ -20,9 +19,9 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({ name, avatar, email, password: hash }))
 
     .then((user) => {
-      const { password: userPassword, ...userWithoutPassword } =
-        user.toObject();
-      res.status(YOUR_DATA_IS_CREATED).send(userWithoutPassword);
+      const userResponse = user.toObject();
+      delete userResponse.password;
+      res.status(YOUR_DATA_IS_CREATED).send(userResponse);
     })
     .catch((err) => {
       console.error(err);
