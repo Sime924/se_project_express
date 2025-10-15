@@ -46,8 +46,7 @@ const deleteItem = async (req, res, next) => {
     return res.send({ message: "Item deleted", item: deletedItem });
   } catch (err) {
     if (err.name === "CastError") {
-      next(new BadRequestError("Invalid ID format"));
-      return;
+      return next(new BadRequestError("Invalid ID format"));
     }
     return next(err);
   }
@@ -91,8 +90,7 @@ const deleteLike = async (req, res, next) => {
     return res.send(updatedItem);
   } catch (err) {
     if (err.name === "CastError") {
-      next(new BadRequestError("Invalid ID format"));
-      return;
+      return next(new BadRequestError("Invalid ID format"));
     }
     return next(err);
   }
